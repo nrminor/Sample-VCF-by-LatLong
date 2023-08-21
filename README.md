@@ -3,6 +3,9 @@
 ## Overview
 The python script `sample-by-coordinate.py` cross-references a multi-sample VCF with a metadata .xlsx file to 1) Make sure the VCF sample names match the metadata sample names, 2) Use a kilometer distance matrix to cluster samples by their collection sites, and 3) Downsample the VCF across geographic clusters. The script will produce three downsampled VCFs: one that is downsampled randomly, irrespective of geographic location, one that is downsampled evenly across all locations, and one that is downsampled more in some locations than in others. The intent of this script is to assess the robustness of results against smaller and less even sampling.
 
+## Inputs and Outputs
+At minimum, the script takes a multi-sample VCF and an excel file as its inputs. The excel file must at least contain a column of sample identifiers called `Sample ID`, a column of decimal latitudes called `Latitude`, and a column of decimal longitudes called `Longitude`. It will output three VCFs, each with a text files of the sample IDs it retained while downsample.
+
 ## Usage
 ```
 usage: sample-by-coordinate.py [-h] --metadata METADATA
