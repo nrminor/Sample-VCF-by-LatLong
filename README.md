@@ -5,7 +5,9 @@ The python script `sample-by-coordinate.py` cross-references a multi-sample VCF 
 
 ## Usage
 ```
-usage: sample-by-coordinate.py [-h] --metadata METADATA [--distance_threshold DISTANCE_THRESHOLD] [--proportion PROPORTION] --vcf VCF [--cores CORES] [--seed SEED]
+usage: sample-by-coordinate.py [-h] --metadata METADATA
+[--distance_threshold DISTANCE_THRESHOLD] [--proportion PROPORTION] 
+--vcf VCF [--cores CORES] [--seed SEED]
 
 options:
   -h, --help            show this help message and exit
@@ -20,3 +22,6 @@ options:
                         Number of cores to use in multiprocessing.
   --seed SEED, -s SEED  Seed for random number generation.
 ```
+
+## Dependencies
+`sample-by-coordinate.py` uses `polars` to create DataFrames, `geopy` to compute the distances between samples, `scipy` to cluster samples by goegraphic location, `numpy` for numerical computations, and both `bcftools` and `vcftools` to process the VCF.
