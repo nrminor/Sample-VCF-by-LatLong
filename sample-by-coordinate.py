@@ -30,6 +30,41 @@ from geopy.distance import distance
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import squareform
 
+def parse_command_line_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--metadata", "-m",
+                        type=str,
+                        required=True,
+                        help="Metadata file with sample IDs and decimal latitudes and longitudes.")
+    parser.add_argument("--distance_threshold", "-d",
+                        type=int,
+                        default=100,
+                        required=False,
+                        help="The maximum kilometer distance at which a new cluster \
+                            should be assigned.")
+    parser.add_argument("--proportion", "-p",
+                        type=float,
+                        default=0.5,
+                        required=False,
+                        help="Proportion of samples to retain in downsampling.")
+    parser.add_argument("--vcf", "-v",
+                        type=str,
+                        required=True,
+                        help="Multisample VCF to subset.")
+    parser.add_argument("--cores", "-c",
+                        type=int,
+                        default=3,
+                        required=False,
+                        help="Number of cores to use in multiprocessing.")
+    parser.add_argument("--seed", "-s",
+                        type=int,
+                        default=14,
+                        required=False,
+                        help="Seed for random number generation.")
+    args = parser.parse_args()
+    return args.metadata, args.distance_threshold, args.proportion, args.seed, args.vcf
+
 def unify_sample_names(metadata_df: pl.DataFrame, vcf_path: str) -> str:
     """
     This function double checks the VCF at the provided path to make
@@ -210,8 +245,7 @@ def create_sample_lists(metadata_df: pl.DataFrame,
 
     return (random_df, even_df, uneven_df)
 
-def main(metadata_path: str, max_distance: int,
-         proportion: float, seed: int, vcf_path: str):
+def main():
     """
     Main handles file I/O and a VCFtools subprocess to bring
     the above functions together.
@@ -227,6 +261,9 @@ def main(metadata_path: str, max_distance: int,
     Returns:
     None
     """
+
+    # parse arguments from the command line
+    metadata_path, max_distance, proportion, seed, vcf_path = parse_command_line_args()
 
     # read metadata into a Polars DataFrame
     metadata = pl.read_excel(metadata_path,
@@ -263,35 +300,4 @@ def main(metadata_path: str, max_distance: int,
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--metadata", "-m",
-                        type=str,
-                        required=True,
-                        help="Metadata file with sample IDs and decimal latitudes and longitudes.")
-    parser.add_argument("--distance_threshold", "-d",
-                        type=int,
-                        default=100,
-                        required=False,
-                        help="The maximum kilometer distance at which a new cluster \
-                            should be assigned.")
-    parser.add_argument("--proportion", "-p",
-                        type=float,
-                        default=0.5,
-                        required=False,
-                        help="Proportion of samples to retain in downsampling.")
-    parser.add_argument("--vcf", "-v",
-                        type=str,
-                        required=True,
-                        help="Multisample VCF to subset.")
-    parser.add_argument("--cores", "-c",
-                        type=int,
-                        default=3,
-                        required=False,
-                        help="Number of cores to use in multiprocessing.")
-    parser.add_argument("--seed", "-s",
-                        type=int,
-                        default=14,
-                        required=False,
-                        help="Seed for random number generation.")
-    args = parser.parse_args()
-    main(args.metadata, args.distance_threshold, args.proportion, args.seed, args.vcf)
+    main()
